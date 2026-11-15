@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Twi-Lil | Space Adventure</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <main class="game-container">
+
+        <header class="top-bar">
+            <div class="logo">✦ Twi-Lil ✦</div>
+           <div class="game-stats">
+                <span>ENERGY: <strong id="energy">100</strong></span>
+                <span>SHIELD: <strong id="shield">100</strong></span>
+                <span>RADIATION: <strong id="radiation">0</strong></span>
+                <span>STARS: <strong id="score">0</strong></span>
+                <span>MISSION: <strong id="mission-number">01</strong></span>
+            </div>
+        </header>
+
+        <section class="game-screen">
+
+            <canvas id="gameCanvas" width="480" height="270"></canvas>
+
+            <div id="start-screen" class="overlay">
+                <div class="menu-box">
+                    <p class="subtitle">A SCIENTIFIC SPACE ADVENTURE</p>
+                    <h1>Twi-Lil</h1>
+                    <p class="menu-description">
+                        Explore the universe.<br>
+                        Discover science. Make smart decisions.
+                    </p>
+                    <button id="start-button" class="main-button">
+                        START ADVENTURE
+                    </button>
+                    <p class="small-text">PRESS PLAY TO BEGIN</p>
+                </div>
+            </div>
+
+            <div id="question-screen" class="overlay hidden">
+                <div class="question-box">
+                    <p class="subtitle">✦ SCIENCE TRANSMISSION ✦</p>
+                    <h2 id="question-title">MISSION 01</h2>
+                    <p id="question-text"></p>
+                    <div id="answer-options" class="answer-options"></div>
+                    <p id="feedback"></p>
+                    <button id="continue-button" class="main-button hidden">
+                        CONTINUE
+                    </button>
+                </div>
+            </div>
+
+        </section>
+
+        <footer class="bottom-bar">
+            <span>✦ EXPLORE THE UNKNOWN ✦</span>
+            <span>MOVE: WASD / ARROW KEYS</span>
+        </footer>
+
+    </main>
+
+    <script src="game.js"></script>
+</body>
+</html>

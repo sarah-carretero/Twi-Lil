@@ -1,0 +1,654 @@
+{
+  "space_adventure": {
+    "title": "Starlight Mission: Space Decisions",
+    "language": "en",
+    "audience": "Kids and teens 7 to 12 years old (science analysis training)",
+    "survival_rule": "Wrong answers sound smart and formal, but they hide small science or engineering mistakes. Read the words in parentheses to learn the secret and choose well.",
+    "player": {
+      "role": "Commander",
+      "avatar": "neutral astronaut, no gender, no name"
+    },
+    "start_state": {
+      "energy": 100,
+      "shield": 100,
+      "radiation": 0,
+      "failed_attempts": 0
+    },
+    "stat_limits": {
+      "energy": { "min": 0, "max": 100 },
+      "shield": { "min": 0, "max": 100 },
+      "radiation": { "min": 0, "max": 100 }
+    },
+    "lose_conditions": [
+      {
+        "stat": "energy",
+        "operator": "<=",
+        "value": 0,
+        "ending": "game_over_energy"
+      },
+      {
+        "stat": "shield",
+        "operator": "<=",
+        "value": 0,
+        "ending": "game_over_shield"
+      },
+      {
+        "stat": "radiation",
+        "operator": ">=",
+        "value": 100,
+        "ending": "game_over_radiation"
+      }
+    ],
+    "lose_rule": "Check all lose conditions immediately after each individual stat modification.",
+    "answer_rules": {
+      "correct_answers_per_node": 1,
+      "effect_application_order": [
+        "energy",
+        "shield",
+        "radiation"
+      ],
+      "on_correct": "Apply each effect in effect_application_order. After every individual stat modification, clamp the stat to its minimum and maximum values and immediately check all lose conditions. If a lose condition is met, stop processing effects, show the corresponding ending, and do not show the lesson or advance to another node. If no lose condition is met, show the result and lesson, then go to the option's next node.",
+      "on_wrong": "Increase failed_attempts by 1. Apply each penalty in effect_application_order. After every individual stat modification, clamp the stat to its minimum and maximum values and immediately check all lose conditions. If a lose condition is met, stop processing penalties, show the corresponding ending, and do not show the lesson or advance to another node. If no lose condition is met, show the result and lesson, then go to the option's next node.",
+      "stat_clamping": "After every individual stat modification, keep energy, shield and radiation between 0 and 100.",
+      "crisis_node_rule": "When a wrong answer leads to a crisis node, automatically display that crisis node and wait for the player to choose one of its options. Do not automatically select an answer."
+    },
+    "side_activities": [
+      {
+        "id": "sleep_in_bed",
+        "room": "living_quarters",
+        "effect": {
+          "energy": 10
+        },
+        "limit": "once per story node",
+        "note": "Player puts on pajamas, then sleeps."
+      },
+      {
+        "id": "harvest_plants",
+        "room": "hydroponics_greenhouse",
+        "effect": {
+          "energy": 5
+        },
+        "limit": "once per story node",
+        "note": "Plant, water, then harvest."
+      },
+      {
+        "id": "recycle_space_debris",
+        "room": "eva",
+        "effect": {
+          "shield": 5
+        },
+        "limit": "every 3 pieces collected, max 3 times per story node",
+        "note": "Recycled metal repairs the hull."
+      }
+    ],
+    "start_node": "radiation_leak",
+    "nodes": [
+      {
+        "id": "radiation_leak",
+        "room": "cockpit",
+        "trigger": "radiation_sensor_alarm",
+        "scene_title": "Alarm on the Space Station!",
+        "story": "You are in your cabin at 23 °C. The sensors detect a leak of *radiation* (invisible high-energy rays) from a Cesium-137 source. The main hallway is dangerous and you must cross it.",
+        "options": [
+          {
+            "id": "plan_route_wear_suit",
+            "text": "Plan your route using *attenuation* (radiation gets weaker the farther you are from it), put on your polymer suit, and watch your *dosimeter* (a radiation meter) while you cross.",
+            "is_correct": true,
+            "effects": {
+              "energy": 0,
+              "shield": 0,
+              "radiation": 0.5
+            },
+            "result": "Distance math and the special suit keep the rays away from your body.",
+            "lesson": "Correct! A good *shielding layer* (a protective cover) plus smart distance math is the safe method.",
+            "next": "electrical_panel_fault"
+          },
+          {
+            "id": "air_curtain",
+            "text": "Turn on the emergency air jets in the hallway to make a thick curtain of gas that will 'slow down' the invisible rays before you cross.",
+            "is_correct": false,
+            "effects": {
+              "energy": -25,
+              "shield": 0,
+              "radiation": 16
+            },
+            "result": "Gamma radiation is made of *photons* (tiny packets of invisible light), not dust. Air does not stop it, and you lose precious time.",
+            "lesson": "Trap! Air curtains clean dust, but they cannot stop invisible rays of *radiation*.",
+            "next": "cellular_fatigue"
+          },
+          {
+            "id": "run_without_suit",
+            "text": "Run across at top speed without the heavy suit, trusting that your cells will heal fast on their own.",
+            "is_correct": false,
+            "effects": {
+              "energy": -45,
+              "shield": 0,
+              "radiation": 24
+            },
+            "result": "The invisible rays go straight into your body and overload your cells.",
+            "lesson": "Running fast does not protect you from strong *radiation*. You need a suit.",
+            "next": "cellular_fatigue"
+          }
+        ]
+      },
+      {
+        "id": "cellular_fatigue",
+        "type": "crisis",
+        "room": "living_quarters",
+        "trigger": "automatic_after_wrong_answer",
+        "scene_title": "Tired Body",
+        "story": "The exposure caused *oxidative stress* (tiny damage inside your cells caused by rays). You must heal your body.",
+        "options": [
+          {
+            "id": "antioxidants_and_rest",
+            "text": "Take *antioxidant* supplements (chemical defenders that catch harmful molecules) and rest in your sleeping pod.",
+            "is_correct": true,
+            "effects": {
+              "energy": 25,
+              "shield": 0,
+              "radiation": -3
+            },
+            "result": "*Antioxidants* clean the inside of your cells and calm the tiny damage.",
+            "lesson": "Well done! *Antioxidants* are chemical shields that help calm cell damage.",
+            "next": "electrical_panel_fault"
+          },
+          {
+            "id": "pure_oxygen_mask",
+            "text": "Put on a mask with super pure oxygen in the pressure chamber to 'wash' your tissues and revive them fast.",
+            "is_correct": false,
+            "effects": {
+              "energy": -35,
+              "shield": 0,
+              "radiation": 4
+            },
+            "result": "Too much pure oxygen in cells that just got *radiation* makes more *free radicals* (harmful molecules), so the damage gets worse.",
+            "lesson": "Trap! Extra oxygen in a body hurt by rays creates more *oxidative stress* instead of healing it.",
+            "next": "electrical_panel_fault"
+          },
+          {
+            "id": "ignore_dizziness",
+            "text": "Keep working without resting, thinking the dizziness will go away by itself.",
+            "is_correct": false,
+            "effects": {
+              "energy": -60,
+              "shield": 0,
+              "radiation": 0
+            },
+            "result": "The tiredness piles up and drains your strength.",
+            "lesson": "Ignoring the warning signs of your body in space can make you collapse.",
+            "next": "electrical_panel_fault"
+          }
+        ]
+      },
+      {
+        "id": "electrical_panel_fault",
+        "room": "engineering",
+        "trigger": "electrical_panel_sparks",
+        "minigame": "circuit_repair",
+        "scene_title": "Sparks on the Panel",
+        "story": "A card with *operational amplifiers* (electronic parts that control signals) has a voltage problem and is throwing sparks.",
+        "options": [
+          {
+            "id": "use_multimeter",
+            "text": "Turn off the power, use your *digital multimeter* (an electricity meter) to check the *impedance* (how much the wires resist electricity), and replace the broken part.",
+            "is_correct": true,
+            "effects": {
+              "energy": 0,
+              "shield": 0,
+              "radiation": 0
+            },
+            "result": "You find the exact broken part and bring back stable light and power.",
+            "lesson": "Great! Turning off the power and measuring with a *multimeter* makes a safe repair.",
+            "next": "cargo_check_oxygen_crops"
+          },
+          {
+            "id": "add_capacitor_powered_on",
+            "text": "Connect an extra *capacitor* (a part that stores electricity) to the wires without turning off the lights, to 'absorb' the sparks right away.",
+            "is_correct": false,
+            "effects": {
+              "energy": -10,
+              "shield": -40,
+              "radiation": 0
+            },
+            "result": "Connecting parts while the failing circuit is on makes a giant spark that burns the whole card.",
+            "lesson": "Trap! Fixing electronics with the power on causes an even bigger short circuit.",
+            "next": "blackout"
+          },
+          {
+            "id": "bridge_wires",
+            "text": "Join the wires directly with a regular piece of wire to force the electricity through.",
+            "is_correct": false,
+            "effects": {
+              "energy": -10,
+              "shield": -50,
+              "radiation": 0
+            },
+            "result": "A direct bridge with no control burns the fuses and shuts down the ship.",
+            "lesson": "Joining wires without measuring the electricity destroys the machines.",
+            "next": "blackout"
+          }
+        ]
+      },
+      {
+        "id": "blackout",
+        "type": "crisis",
+        "room": "engineering",
+        "trigger": "automatic_after_wrong_answer",
+        "scene_title": "Blackout on the Ship",
+        "story": "The short circuit messed up the main power source. You must put the voltage back in order.",
+        "options": [
+          {
+            "id": "follow_manual_exact_fuse",
+            "text": "Read the technical plan, set the current limits, and replace the burned fuse with one that has the exact factory *specification* (the exact size and rating).",
+            "is_correct": true,
+            "effects": {
+              "energy": -10,
+              "shield": 20,
+              "radiation": 0
+            },
+            "result": "Electricity comes back clean and orderly to the whole cabin.",
+            "lesson": "Following the technical plans and using parts of the exact size makes a perfect repair.",
+            "next": "cargo_check_oxygen_crops"
+          },
+          {
+            "id": "copper_wire_fuse",
+            "text": "Replace the burned fuse with a thick copper wire so it 'never breaks again' if there is another power surge.",
+            "is_correct": false,
+            "effects": {
+              "energy": -40,
+              "shield": -20,
+              "radiation": 0
+            },
+            "result": "Fuses are made to break and sacrifice themselves to protect the ship. With a hard wire, the next surge burns the expensive circuits.",
+            "lesson": "Trap! A fuse must sacrifice itself to save the ship. A wire in its place ruins the whole card.",
+            "next": "cargo_check_oxygen_crops"
+          },
+          {
+            "id": "turn_off_air_sensors",
+            "text": "Turn off the air safety sensors to send all the power to the screen.",
+            "is_correct": false,
+            "effects": {
+              "energy": -50,
+              "shield": -10,
+              "radiation": 0
+            },
+            "result": "Now you cannot know if the air you breathe is safe.",
+            "lesson": "Never turn off the safety sensors that protect your life.",
+            "next": "cargo_check_oxygen_crops"
+          }
+        ]
+      },
+      {
+        "id": "cargo_check_oxygen_crops",
+        "room": "hydroponics_greenhouse",
+        "trigger": "greenhouse_oxygen_control",
+        "minigame": "plant_water_harvest",
+        "scene_title": "The Oxygen Greenhouse",
+        "story": "You must check the crops that make air by measuring the *turbidity* (how cloudy or full of cells the nutrient liquid is).",
+        "options": [
+          {
+            "id": "spectrophotometer_three_wavelengths",
+            "text": "Use a *spectrophotometer* (a special light meter) and test three *wavelengths* (colors of light) at 570, 600 and 690 nanometers.",
+            "is_correct": true,
+            "effects": {
+              "energy": 20,
+              "shield": 0,
+              "radiation": 0
+            },
+            "result": "You confirm with exact data that the crops are healthy and making pure oxygen.",
+            "lesson": "Excellent! Using several *wavelengths* of light helps measure the health of living things with precision.",
+            "next": "engine_heat_alert"
+          },
+          {
+            "id": "single_wavelength",
+            "text": "Measure the liquid using only one light of 600 nanometers, assuming that growth always goes up in a simple straight line.",
+            "is_correct": false,
+            "effects": {
+              "energy": -25,
+              "shield": 0,
+              "radiation": 0
+            },
+            "result": "When crops are stressed by radiation, their cells change shape and size, so one light alone gives a totally false reading.",
+            "lesson": "Trap! Measuring with only one light fools you when cells are changed by stress.",
+            "next": "engine_heat_alert"
+          },
+          {
+            "id": "guess_by_eye",
+            "text": "Look at the jar from the outside with your own eyes and guess if the air is fine.",
+            "is_correct": false,
+            "effects": {
+              "energy": -25,
+              "shield": 0,
+              "radiation": 0
+            },
+            "result": "Your eyes cannot see tiny changes inside liquids.",
+            "lesson": "Human eyes cannot measure bacteria or tiny cells without instruments.",
+            "next": "engine_heat_alert"
+          }
+        ]
+      },
+      {
+        "id": "engine_heat_alert",
+        "room": "engineering",
+        "trigger": "thruster_panel_warning",
+        "scene_title": "Heat Alert in the Engine",
+        "story": "The *RTD temperature sensor* (a very precise platinum thermometer) warns that its electrical resistance changed because of heat.",
+        "options": [
+          {
+            "id": "math_correction_rtd",
+            "text": "Use a math formula to correct the *RTD sensor* to the real temperature before cooling the system.",
+            "is_correct": true,
+            "effects": {
+              "energy": 10,
+              "shield": 0,
+              "radiation": 0
+            },
+            "result": "The formula fixes the small sensor error and you cool the engine with precision.",
+            "lesson": "Perfect! Using math formulas to adjust *sensor* readings prevents serious heat mistakes.",
+            "next": "solar_storm"
+          },
+          {
+            "id": "assume_straight_line",
+            "text": "Assume the sensor change is a simple straight line and apply a fixed factory correction without doing any calculations.",
+            "is_correct": false,
+            "effects": {
+              "energy": -30,
+              "shield": -10,
+              "radiation": 0
+            },
+            "result": "Platinum sensors do not change in a perfectly straight line. A made-up easy rule hides a real overheating problem.",
+            "lesson": "Trap! Assuming heat readings are simple without calculating can hide a boiling engine.",
+            "next": "engine_failure"
+          },
+          {
+            "id": "ignore_temperature",
+            "text": "Think the sensor alarm is just broken and do nothing.",
+            "is_correct": false,
+            "effects": {
+              "energy": 0,
+              "shield": -30,
+              "radiation": 0
+            },
+            "result": "Heat that nobody fixes bends the metal parts from the inside.",
+            "lesson": "Ignoring warnings from heat instruments ruins the machine.",
+            "next": "engine_failure"
+          }
+        ]
+      },
+      {
+        "id": "engine_failure",
+        "type": "crisis",
+        "room": "engineering",
+        "trigger": "automatic_after_wrong_answer",
+        "scene_title": "The Engine is Slipping",
+        "story": "The heat made the metal parts of the engine stretch, and they squeak when they spin.",
+        "options": [
+          {
+            "id": "half_power_backup_engine",
+            "text": "Lower the damaged engine to half power and start a small backup engine to help.",
+            "is_correct": true,
+            "effects": {
+              "energy": -20,
+              "shield": 0,
+              "radiation": 0
+            },
+            "result": "The ship stays balanced because the work is shared between several small engines.",
+            "lesson": "Using spare parts and not forcing a damaged engine saves the trip.",
+            "next": "solar_storm"
+          },
+          {
+            "id": "max_power_break_jam",
+            "text": "Raise the engine power to the maximum for a few seconds to 'break through' the jam of the stretched metal.",
+            "is_correct": false,
+            "effects": {
+              "energy": -45,
+              "shield": -25,
+              "radiation": 0
+            },
+            "result": "Forcing hot, stretched metal with so much power makes it crack and break apart.",
+            "lesson": "Trap! Adding more force to an engine jammed by heat only breaks it into pieces.",
+            "next": "solar_storm"
+          },
+          {
+            "id": "pour_water_on_engine",
+            "text": "Pour water from the cooling tank over the hot engine to cool it down very fast.",
+            "is_correct": false,
+            "effects": {
+              "energy": -20,
+              "shield": -30,
+              "radiation": 0
+            },
+            "result": "Cold water on very hot metal makes it shrink too fast and crack. Water is also dangerous near electronics.",
+            "lesson": "Trap! Cooling hot metal too fast makes it crack. Engines need proper coolant, not water.",
+            "next": "solar_storm"
+          }
+        ]
+      },
+      {
+        "id": "solar_storm",
+        "room": "living_quarters",
+        "trigger": "solar_storm_alarm",
+        "scene_title": "Solar Proton Storm!",
+        "story": "A flare from the Sun throws a river of *protons* (tiny particles with electric charge and high energy) toward the ship.",
+        "options": [
+          {
+            "id": "water_wall_shelter",
+            "text": "Run to the center of the ship and hide behind the thick water walls, the safest shelter.",
+            "is_correct": true,
+            "effects": {
+              "energy": 0,
+              "shield": 0,
+              "radiation": 1
+            },
+            "result": "The water slows down and absorbs the dangerous particles from the storm.",
+            "lesson": "Great physics! Water is the best *moderator* (a natural slower-downer) against protons in space.",
+            "next": "space_debris"
+          },
+          {
+            "id": "giant_electric_shield",
+            "text": "Raise the electricity of the outside solar panels to the maximum to make a giant electric shield that pushes the protons away.",
+            "is_correct": false,
+            "effects": {
+              "energy": -50,
+              "shield": 0,
+              "radiation": 38
+            },
+            "result": "A giant electric shield in open space turns off at once because of the *plasma* (hot charged gas) around us, and it burns the ship's regulators.",
+            "lesson": "Trap! A giant electric shield in space does not work and wastes your energy.",
+            "next": "space_debris"
+          },
+          {
+            "id": "keep_working_outside",
+            "text": "Keep working outside, trusting that your regular spacewalk suit can handle everything.",
+            "is_correct": false,
+            "effects": {
+              "energy": -50,
+              "shield": 0,
+              "radiation": 45
+            },
+            "result": "The storm of protons goes through your suit and you get too much radiation.",
+            "lesson": "A regular spacewalk suit cannot resist a solar storm without a shelter.",
+            "next": "space_debris"
+          }
+        ]
+      },
+      {
+        "id": "space_debris",
+        "room": "cockpit",
+        "trigger": "radar_debris_warning",
+        "scene_title": "Space Junk Danger!",
+        "story": "A piece of old metal is flying straight toward the station at great speed.",
+        "options": [
+          {
+            "id": "relative_velocity_thrusters",
+            "text": "Calculate the *relative velocity* (how fast the object moves compared to us) and fire the thrusters a little to move out of the way.",
+            "is_correct": true,
+            "effects": {
+              "energy": -5,
+              "shield": 0,
+              "radiation": 0
+            },
+            "result": "The station moves in time and the metal passes by without touching us.",
+            "lesson": "Perfect! Calculating movement with math helps dodge objects in time.",
+            "next": "solar_panels"
+          },
+          {
+            "id": "take_hit_head_on",
+            "text": "Turn the ship to face the piece head-on and take the hit with the main frame, which is the hardest part.",
+            "is_correct": false,
+            "effects": {
+              "energy": 0,
+              "shield": -45,
+              "radiation": 0
+            },
+            "result": "Even if the center is strong, a fast hit from the front sends a destructive *shock wave* (a wave of force) through the whole ship.",
+            "lesson": "Trap! Taking a hit head-on sends a destructive wave through the whole structure.",
+            "next": "solar_panels"
+          },
+          {
+            "id": "wait_and_hope",
+            "text": "Cross your arms and hope the hull can take the hit all by itself.",
+            "is_correct": false,
+            "effects": {
+              "energy": 0,
+              "shield": -35,
+              "radiation": 0
+            },
+            "result": "The object hits a side panel and breaks the protection.",
+            "lesson": "Hoping for luck without calculating movement is very dangerous.",
+            "next": "solar_panels"
+          }
+        ]
+      },
+      {
+        "id": "solar_panels",
+        "room": "cockpit",
+        "trigger": "flight_controls_low_battery",
+        "scene_title": "Charging the Batteries",
+        "story": "You must program the solar panels so they catch the best light from the Sun.",
+        "options": [
+          {
+            "id": "perpendicular_panels",
+            "text": "Program the automatic system so the panels always stay *perpendicular* (making an exact 90 degree cross) to the sun rays.",
+            "is_correct": true,
+            "effects": {
+              "energy": 20,
+              "shield": 0,
+              "radiation": 0
+            },
+            "result": "The panels catch the most light possible and charge the batteries to the maximum.",
+            "lesson": "Excellent! Keeping panels *perpendicular* to the Sun gives you the most clean energy.",
+            "next": "landing_sequence"
+          },
+          {
+            "id": "face_earth_albedo",
+            "text": "Leave the panels fixed facing Earth to use both direct light and *albedo* (sunlight bounced back by clouds and the ground).",
+            "is_correct": false,
+            "effects": {
+              "energy": -30,
+              "shield": 0,
+              "radiation": 0
+            },
+            "result": "Light bounced by Earth is weak. Leaving the panels fixed there wastes the direct sunlight.",
+            "lesson": "Trap! Depending on bounced light (*albedo*) instead of facing the Sun leaves you with almost no power.",
+            "next": "landing_sequence"
+          },
+          {
+            "id": "push_panels_by_hand",
+            "text": "Disconnect the computer and push the panels by hand with the strength of your arms.",
+            "is_correct": false,
+            "effects": {
+              "energy": -30,
+              "shield": 0,
+              "radiation": 0
+            },
+            "result": "A rough adjustment makes the panels catch almost no light.",
+            "lesson": "Moving the panels by hand without calculating lowers the ship's energy.",
+            "next": "landing_sequence"
+          }
+        ]
+      },
+      {
+        "id": "landing_sequence",
+        "room": "cockpit",
+        "trigger": "start_reentry_button",
+        "minigame": "reentry_alignment",
+        "scene_title": "Back Home!",
+        "story": "You beat storms, broken circuits, and science tests. It is time to return to Earth.",
+        "options": [
+          {
+            "id": "correct_angle_and_parachutes",
+            "text": "Line up the heat shield at the correct *angle of attack* (the angle the ship meets the air) and open the parachutes step by step using *telemetry* (data sent from the ship's sensors).",
+            "is_correct": true,
+            "effects": {
+              "energy": 0,
+              "shield": 0,
+              "radiation": 0
+            },
+            "result": "A soft and happy landing on Earth! You proved you are a science expert of space.",
+            "lesson": "Mission complete! Thinking with science, measuring well and checking every detail made you win.",
+            "next": "victory"
+          },
+          {
+            "id": "dive_straight_down",
+            "text": "Dive straight down into the air at a very steep angle so the hot part of the trip lasts less time.",
+            "is_correct": false,
+            "effects": {
+              "energy": -20,
+              "shield": -45,
+              "radiation": 0
+            },
+            "result": "A very steep dive makes the heat and the pushing force too strong for the ship.",
+            "lesson": "Trap! Coming in too steep makes extreme heat and force. The right angle spreads them out.",
+            "next": "mission_incomplete"
+          },
+          {
+            "id": "turn_off_heat_shield",
+            "text": "Turn off the heat shield to save power for the parachutes.",
+            "is_correct": false,
+            "effects": {
+              "energy": 0,
+              "shield": -60,
+              "radiation": 0
+            },
+            "result": "Without the heat shield the ship gets hotter than it can handle.",
+            "lesson": "Never turn off the heat shield during reentry. It is the part that protects you from burning.",
+            "next": "mission_incomplete"
+          }
+        ]
+      }
+    ],
+    "endings": [
+      {
+        "id": "victory",
+        "type": "win",
+        "scene_title": "Absolute Space Mastery!",
+        "story": "You did it, Commander! You beat every hard technical problem and showed an amazing talent to think like a real engineer."
+      },
+      {
+        "id": "mission_incomplete",
+        "type": "incomplete",
+        "scene_title": "Mission Incomplete",
+        "story": "You finished the journey and kept your indicators alive, but mistakes made during the landing sequence mean the mission cannot be certified as fully successful."
+      },
+      {
+        "id": "game_over_energy",
+        "type": "lose",
+        "scene_title": "Game Over: Out of Energy",
+        "story": "Your energy ran out. Bad decisions drained you and the ship. Try again and think about each choice with more care!"
+      },
+      {
+        "id": "game_over_shield",
+        "type": "lose",
+        "scene_title": "Game Over: Shield Broken",
+        "story": "The ship's shield broke apart. Mistakes with power, heat or impacts left it unprotected. Try again and measure before you act!"
+      },
+      {
+        "id": "game_over_radiation",
+        "type": "lose",
+        "scene_title": "Game Over: Too Much Radiation",
+        "story": "Radiation went past the safe limit. Trusting false tricks instead of real science was too risky. Try again with the right science!"
+      }
+    ]
+  }
+}
